@@ -1,46 +1,32 @@
 import "@rainbow-me/rainbowkit/styles.css";
-import { getDefaultWallets } from "@rainbow-me/rainbowkit";
-import { configureChains, createConfig } from "wagmi";
+import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import * as chain from "wagmi/chains";
-import { publicProvider } from "wagmi/providers/public";
-import { alchemyProvider } from "wagmi/providers/alchemy";
+import { http } from "viem";
 
 // All of the chains configured below are supported by Tableland
-const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [
-    chain.mainnet,
-    chain.polygon,
-    chain.optimism,
-    chain.arbitrum,
-    chain.filecoin,
-    ...(import.meta.env.VITE_ENABLE_TESTNETS === "true"
-      ? [
-          chain.arbitrumSepolia,
-          chain.sepolia,
-          chain.polygonMumbai,
-          chain.optimismGoerli,
-          chain.filecoinCalibration,
-          chain.hardhat,
-        ]
-      : []),
-  ],
-  [
-    alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_API_KEY ?? "" }), // Set up an Alchemy account: https://www.alchemy.com/
-    publicProvider(),
-  ]
-);
+const chains = [
+  chain.mainnet,
+  chain.polygon,
+  chain.optimism,
+  chain.arbitrum,
+  chain.filecoin,
+  ...(import.meta.env.VITE_ENABLE_TESTNETS === "true"
+    ? [
+        chain.arbitrumSepolia,
+        chain.sepolia,
+        chain.polygonMumbai,
+        chain.optimismSepolia,
+        chain.filecoinCalibration,
+        chain.hardhat,
+      ]
+    : []),
+];
 
-const { connectors } = getDefaultWallets({
+const transports = Object.fromEntries(chains.map((c) => [c.id, http()]));
+
+export const config = getDefaultConfig({
   appName: "Tableland Starter",
   chains,
+  transports,
   projectId: import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID ?? "", // Set up a WalletConnect account: https://walletconnect.com/
 });
-
-export const config = createConfig({
-  autoConnect: true,
-  connectors,
-  publicClient,
-  webSocketPublicClient,
-});
-
-export { chains };

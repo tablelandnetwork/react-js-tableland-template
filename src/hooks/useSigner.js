@@ -1,7 +1,7 @@
-// Convert wagmi/viem `WalletClient` to ethers `Signer`
+// Convert wagmi/viem `Client` to ethers `Signer`
 import { useMemo } from "react";
-import { useWalletClient } from "wagmi";
 import { providers } from "ethers";
+import { useWalletClient } from "wagmi";
 
 function walletClientToSigner(walletClient) {
   const { account, chain, transport } = walletClient;
@@ -10,7 +10,7 @@ function walletClientToSigner(walletClient) {
     name: chain.name,
     ensAddress: chain.contracts?.ensRegistry?.address,
   };
-  const provider = new providers.Web3Provider(transport, network);
+  const provider = new providers.JsonRpcProvider(transport.url, network);
   const signer = provider.getSigner(account.address);
   return signer;
 }
