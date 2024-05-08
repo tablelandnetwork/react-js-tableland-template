@@ -1,16 +1,13 @@
 import assert, { strictEqual, match } from "assert";
 import { describe, test } from "mocha";
-import { getDefaultProvider } from "ethers";
 import { getAccounts } from "@tableland/local";
 import { Database } from "@tableland/sdk";
 
 describe("index", function () {
   this.timeout(10000);
 
-  const accounts = getAccounts();
-  const wallet = accounts[1];
-  const provider = getDefaultProvider("http://127.0.0.1:8545");
-  const signer = wallet.connect(provider);
+  const accounts = getAccounts("http://127.0.0.1:8545");
+  const signer = accounts[1];
   const db = new Database({ signer, autoWait: true });
 
   test("create", async function () {
